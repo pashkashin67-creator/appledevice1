@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог приложений | Apple Device</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000; color: #fff; line-height: 1.2; overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar { 
+            position: fixed; top: 0; left: 0; right: 0; height: 72px; padding: 0 24px;
+            background: rgba(26, 26, 26, 0.92); backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 10000;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .navbar.scrolled { height: 60px; padding: 0 20px; }
+        .nav-container { max-width: 1400px; margin: 0 auto; height: 100%; 
+            display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; 
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
+        .back-btn { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.8); 
+            text-decoration: none; font-size: 16px; padding: 12px 20px; border-radius: 12px; 
+            backdrop-filter: blur(20px); transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); }
+        .back-btn:hover { color: #fff; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+
+        /* HERO */
+        .hero { height: 80vh; min-height: 600px; display: flex; align-items: center; 
+            justify-content: center; text-align: center; position: relative; 
+            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120,119,198,0.15) 0%, transparent 70%); }
+        .hero-content { max-width: 900px; padding: 0 32px; }
+        .hero-badge { display: inline-block; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); 
+            padding: 10px 24px; border-radius: 30px; font-size: 16px; font-weight: 500; 
+            letter-spacing: 0.05em; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.2); }
+        .hero h1 { font-size: clamp(4rem, 10vw, 8rem); font-weight: 250; letter-spacing: -0.03em; 
+            line-height: 0.9; margin-bottom: 24px; }
+        .hero-subtitle { font-size: clamp(1.4rem, 3vw, 2.2rem); opacity: 0.9; font-weight: 300; margin-bottom: 56px; }
+
+        /* ТВОИ ТОЧНЫЕ ИКОНКИ 90x90 */
+        .app-icon {
+            width: 90px !important; height: 90px !important; border-radius: 22px !important;
+            margin: 0 auto 32px !important; object-fit: contain !important; 
+            background: rgba(255,255,255,0.08) !important; border: 1px solid rgba(255,255,255,0.12) !important;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.5) !important; padding: 10px !important;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        }
+        .app-icon:hover { 
+            transform: scale(1.08) !important; box-shadow: 0 24px 64px rgba(0,0,0,0.7) !important;
+            border-color: rgba(255,255,255,0.25) !important;
+        }
+
+        /* APPS GRID */
+        .apps-section { padding: 140px 24px 120px; max-width: 1400px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 120px; }
+        .section-title { font-size: clamp(3.5rem, 8vw, 6rem); font-weight: 250; letter-spacing: -0.025em; margin-bottom: 20px; }
+        .section-subtitle { font-size: 26px; opacity: 0.85; max-width: 750px; margin: 0 auto; line-height: 1.55; }
+        .apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 56px; margin-top: 80px; }
+
+        /* APPLE PRODUCT CARDS */
+        .app-card {
+            background: rgba(28, 28, 28, 0.75); backdrop-filter: blur(30px); border-radius: 36px;
+            padding: 56px 48px; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
+            opacity: 0; transform: translateY(60px); transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .app-card.animate { opacity: 1; transform: translateY(0); }
+        .app-card:hover {
+            transform: translateY(-24px) !important; 
+            box-shadow: 0 72px 144px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.25) !important;
+            background: rgba(55, 55, 55, 0.98) !important;
+        }
+        .app-card h3 { font-size: 42px; font-weight: 500; margin-bottom: 20px; letter-spacing: -0.02em; }
+        .app-card .platform { font-size: 19px; color: rgba(255,255,255,0.75); margin-bottom: 32px; font-weight: 450; }
+        .app-description { font-size: 21px; opacity: 0.9; margin-bottom: 48px; line-height: 1.7; }
+
+        .download-group { display: flex; gap: 24px; flex-wrap: wrap; }
+        .download-btn {
+            flex: 1; min-width: 200px; padding: 20px 36px; background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.4); color: #fff; text-decoration: none; border-radius: 24px;
+            font-size: 19px; font-weight: 500; display: flex; align-items: center; gap: 14px;
+            backdrop-filter: blur(25px); transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+            position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .download-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); 
+            transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .download-btn:hover::before { left: 100%; }
+        .download-btn:hover {
+            background: rgba(255,255,255,0.3) !important; border-color: rgba(255,255,255,0.7) !important; 
+            transform: translateY(-6px) !important; box-shadow: 0 28px 56px rgba(0,0,0,0.6) !important;
+        }
+
+        /* ПЛАТФОРМНЫЕ ГРАДИЕНТЫ */
+        .win-btn { background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%) !important; border-color: #00d4ff !important; }
+        .mac-btn { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important; border-color: #ff6b6b !important; }
+        .win-btn:hover { background: linear-gradient(135deg, #00b8e6 0%, #007bb5 100%) !important; }
+        .mac-btn:hover { background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%) !important; }
+
+        /* FOOTER */
+        .footer { padding: 140px 24px 80px; border-top: 1px solid rgba(255,255,255,0.1); 
+            max-width: 1400px; margin: 0 auto; text-align: center; }
+        .footer p { opacity: 0.7; font-size: 18px; }
+        .footer a { color: #00d4ff; text-decoration: none; font-weight: 500; }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .apps-grid { grid-template-columns: 1fr; gap: 48px; }
+            .app-card { padding: 44px 36px; }
+            .download-group { flex-direction: column; gap: 20px; }
+            .app-icon { width: 76px !important; height: 76px !important; }
+            .hero h1 { font-size: 3.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Apple Device</a>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left" style="font-size: 14px;"></i> Главная
+            </a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Каталог приложений</div>
+            <h1>Apple Device</h1>
+            <p class="hero-subtitle">Инструменты для iPhone, iPad и Mac</p>
+        </div>
+    </section>
+
+    <!-- КАТАЛОГ С ТВОИМИ ТОЧНЫМИ ИКОНКАМИ -->
+    <section class="apps-section">
+        <div class="section-header">
+            <h2 class="section-title">Проверенные инструменты</h2>
+            <p class="section-subtitle">Только официальные версии для Windows и macOS</p>
+        </div>
+
+        <div class="apps-grid">
+            <!-- MISAKA26 - ТВОЯ ИКОНКА -->
+            <div class="app-card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQP4sitYd0tHiNSiTuP5P2MLAY8w71xe3T3A&s" alt="Misaka26" class="app-icon">
+                <h3>Misaka26</h3>
+                <div class="platform">Windows 1.6 • macOS 1.6</div>
+                <p class="app-description">Jailbreak и кастомизация iOS 16-26. TrollStore, Apple Intelligence, KFD эксплойты.</p>
+                <div class="download-group">
+                    <a href="https://github.com/straight-tamago/misaka26/releases/download/26.1.6/misaka26-v1.6-Windows-Edition.zip" class="download-btn win-btn" download>
+                        <i class="fab fa-windows"></i> Windows 1.6
+                    </a>
+                    <a href="https://github.com/straight-tamago/misaka26/releases/download/26.1.6/misaka26-v1.6-macOS-Edition.zip" class="download-btn mac-btn" download>
+                        <i class="fab fa-apple"></i> macOS 1.6
+                    </a>
+                </div>
+            </div>
+
+            <!-- NUGGET - ТВОЯ ИКОНКА -->
+            <div class="app-card">
+                <img src="https://nuggetios.com/wp-content/uploads/2025/10/cropped-icon-150x150.png" alt="Nugget" class="app-icon">
+                <h3>Nugget</h3>
+                <div class="platform">Windows v7.1</div>
+                <p class="app-description"><strong>Без jailbreak!</strong> Dynamic Island, Status Bar, иконки, DevMenu для iOS 16-18.</p>
+                <div class="download-group">
+                    <a href="https://github.com/leminlimez/Nugget/releases/download/v7.1/Nugget_Windows.zip" class="download-btn win-btn" download>
+                        <i class="fab fa-windows"></i> Скачать v7.1
+                    </a>
+                </div>
+            </div>
+
+            <!-- ITUNES - ТВОЯ ИКОНКА -->
+            <div class="app-card">
+                <img src="https://help.apple.com/assets/65F888B2B2F4A0D0EA005BE5/65F888B35B54CF6A740B68EA/ru_RU/6c4ec679fc7e16151828b2ad053880a3.png" alt="iTunes" class="app-icon">
+                <h3>iTunes</h3>
+                <div class="platform">Windows (официально)</div>
+                <p class="app-description">Официальное ПО Apple. Синхронизация, музыка, бэкапы iPhone/iPad.</p>
+                <div class="download-group">
+                    <a href="https://www.apple.com/itunes/download/win64" class="download-btn win-btn" target="_blank">
+                        <i class="fab fa-windows"></i> Windows 64-bit
+                    </a>
+                    <a href="https://www.apple.com/itunes/download/win32" class="download-btn win-btn" target="_blank">
+                        <i class="fab fa-windows"></i> Windows 32-bit
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3UTOOLS - ТВОЯ ИКОНКА -->
+            <div class="app-card">
+                <img src="https://img.utdstc.com/icon/ec9/8bc/ec98bc886d0fc7f6269452ae534e704f1fd3bd2e220b867a0a279449de912581:200" alt="3uTools" class="app-icon">
+                <h3>3uTools</h3>
+                <div class="platform">Windows x64 • x86</div>
+                <p class="app-description">Флеш прошивок, джейлбрейк, бэкапы, файловый менеджер для iPhone/iPad.</p>
+                <div class="download-group">
+                    <a href="https://dl.3u.com/3utools/3uTools_v4.04_Setup_x64.exe" class="download-btn win-btn" download>
+                        <i class="fab fa-windows"></i> x64 v4.04
+                    </a>
+                    <a href="https://dl.3u.com/3utools/3uTools_v4.04_Setup_x86.exe" class="download-btn win-btn" download>
+                        <i class="fab fa-windows"></i> x86 v4.04
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>© 2025 <a href="index.html">Apple Device</a> | 
+            <a href="https://t.me/appIepuy">Telegram канал</a></p>
+    </footer>
+
+    <script>
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('animate'), index * 200);
+                }
+            });
+        });
+        document.querySelectorAll('.app-card').forEach(card => observer.observe(card));
+    </script>
+</body>
+</html>
